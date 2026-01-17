@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell.exe -File \"C:\\Users\\<USERNAME>\\ClaudeScripts\\toast-notify.ps1\" -Title \"Claude Code - Completed\" -Message \"タスクが完了しました\" -Sound \"Default\""
+          },
+          {
+            "type": "command",
+            "command": "~/.claude/scripts/notify-with-task.sh completed 2 3000"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell.exe -File \"C:\\Users\\<USERNAME>\\ClaudeScripts\\toast-notify.ps1\" -Title \"Claude Code - Input Required\" -Message \"入力待ちです\" -Sound \"SMS\""
+          },
+          {
+            "type": "command",
+            "command": "~/.claude/scripts/notify-with-task.sh waiting 2 3000"
+          }
+        ]
+      }
+    ]
+  }
+}
