@@ -12,11 +12,17 @@ WSL2 + Windows 環境で動作し、作業中のブランチ名から課題番�
 - **Windows トースト通知** - 視覚的な通知も同時に表示
 - **ブランチ名から課題番号を自動抽出** - Backlog/GitHub Issue 形式に対応 (例: `feature/PROJ-1234` → 「1234」を読み上げ)
 - **読み上げ速度・抑揚のカスタマイズ** - 数字部分とメッセージ部分を別々に調整可能
+- **多言語対応** - 環境変数 `NOTIFY_LANG` で日本語/英語のメッセージを切り替え可能
 
 ## デモ
 
-- タスク完了時: 「1234 が完了しました」
-- 入力待ち時: 「1234 が入力待ちです」
+**日本語 (デフォルト):**
+- タスク完了時: 「いちにぃさんよん が完了しました」
+- 入力待ち時: 「いちにぃさんよん が入力待ちです」
+
+**英語 (`NOTIFY_LANG=en`):**
+- タスク完了時: "one two three four has completed"
+- 入力待ち時: "one two three four is waiting for input"
 
 ## 必要な環境
 
@@ -110,6 +116,27 @@ notify-with-task.sh <event_type> [speaker] [delay_ms] [speed_num] [speed_msg] [i
 | speed_msg | メッセージ部分の読み上げ速度 | 1.0 |
 | int_num | 数字部分の抑揚 | 1.2 |
 | int_msg | メッセージ部分の抑揚 | 1.0 |
+
+**環境変数:**
+
+| 変数 | 説明 | デフォルト |
+|------|------|-----------|
+| NOTIFY_LANG | メッセージの言語: `ja` (日本語) または `en` (英語) | `ja` |
+
+**英語メッセージの例:**
+
+```bash
+NOTIFY_LANG=en ~/.claude/scripts/notify-with-task.sh completed 2 3000
+```
+
+**Claude Code hooks 設定例 (英語):**
+
+```json
+{
+  "type": "command",
+  "command": "NOTIFY_LANG=en ~/.claude/scripts/notify-with-task.sh completed 2 3000"
+}
+```
 
 ### voicevox-voice.ps1
 

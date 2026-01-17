@@ -18,6 +18,10 @@
 #   speed_msg   - Speed for message part (default: 1.0) / メッセージ部分の速度 (デフォルト: 1.0)
 #   int_num     - Intonation for number part (default: 1.2) / 数字部分の抑揚 (デフォルト: 1.2)
 #   int_msg     - Intonation for message part (default: 1.0) / メッセージ部分の抑揚 (デフォルト: 1.0)
+#
+# Environment Variables / 環境変数:
+#   NOTIFY_LANG - Language for messages: "ja" (default) or "en"
+#                 メッセージの言語: "ja" (デフォルト) または "en"
 # =============================================================================
 
 EVENT_TYPE="$1"  # "completed" or "waiting"
@@ -28,12 +32,23 @@ SPEED_MSG="${5:-1.0}"    # Speed for message part / メッセージ部分の速�
 INT_NUM="${6:-1.2}"      # Intonation for number part / 数字部分の抑揚
 INT_MSG="${7:-1.0}"      # Intonation for message part / メッセージ部分の抑揚
 
+# Language setting (ja or en) / 言語設定 (ja または en)
+LANG_SETTING="${NOTIFY_LANG:-ja}"
+
 # -----------------------------------------------------------------------------
 # Convert digits to hiragana for natural Japanese speech
 # 数字をひらがなに変換（自然な日本語読み上げのため）
 # -----------------------------------------------------------------------------
 digits_to_hiragana() {
     echo "$1" | sed 's/0/ぜろ/g; s/1/いち/g; s/2/にぃ/g; s/3/さん/g; s/4/よん/g; s/5/ご/g; s/6/ろく/g; s/7/なな/g; s/8/はち/g; s/9/きゅう/g'
+}
+
+# -----------------------------------------------------------------------------
+# Convert digits to English words for clearer pronunciation in VOICEVOX
+# 数字を英単語に変換（VOICEVOX での発音を明確にするため）
+# -----------------------------------------------------------------------------
+digits_to_english() {
+    echo "$1" | sed 's/0/ zero /g; s/1/ one /g; s/2/ two /g; s/3/ three /g; s/4/ four /g; s/5/ five /g; s/6/ six /g; s/7/ seven /g; s/8/ eight /g; s/9/ nine /g' | sed 's/  */ /g; s/^ //; s/ $//'
 }
 
 # -----------------------------------------------------------------------------
@@ -78,22 +93,39 @@ if [[ "$TASK_ID" =~ ^.+-([0-9]+)$ ]]; then
     IS_NUMBER=true
 fi
 
-# Convert pure numbers to hiragana / 数字だけの場合はひらがなに変換
+# Convert pure numbers based on language setting
+# 言語設定に基づいて数字を変換
 if [[ "$TASK_ID" =~ ^[0-9]+$ ]]; then
-    TASK_ID=$(digits_to_hiragana "$TASK_ID")
+    if [ "$LANG_SETTING" = "en" ]; then
+        # English: convert to spoken words for clearer pronunciation
+        # 英語: 発音を明確にするため単語に変換
+        TASK_ID=$(digits_to_english "$TASK_ID")
+    else
+        # Japanese: convert to hiragana
+        # 日本語: ひらがなに変換
+        TASK_ID=$(digits_to_hiragana "$TASK_ID")
+    fi
     IS_NUMBER=true
 fi
 
 # -----------------------------------------------------------------------------
-# Build message suffix based on event type
-# イベントタイプに基づいてメッセージの末尾を構築
+# Build message suffix based on event type and language
+# イベントタイプと言語に基づいてメッセージの末尾を構築
 # -----------------------------------------------------------------------------
 case "$EVENT_TYPE" in
     "completed")
-        SUFFIX="が完了しました"
+        if [ "$LANG_SETTING" = "en" ]; then
+            SUFFIX="has completed"
+        else
+            SUFFIX="が完了しました"
+        fi
         ;;
     "waiting")
-        SUFFIX="が入力待ちです"
+        if [ "$LANG_SETTING" = "en" ]; then
+            SUFFIX="is waiting for input"
+        else
+            SUFFIX="が入力待ちです"
+        fi
         ;;
     *)
         SUFFIX=""

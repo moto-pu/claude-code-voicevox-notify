@@ -12,11 +12,17 @@ Get audio notifications when tasks complete or when Claude Code is waiting for y
 - **Windows Toast Notifications** - Visual notifications alongside audio
 - **Auto-extract Issue Numbers** - Extracts issue numbers from git branch names (e.g., `feature/PROJ-1234` → reads "1234")
 - **Customizable Speech** - Adjust speed and intonation separately for numbers and messages
+- **Multi-language Support** - Japanese and English message support via `NOTIFY_LANG` environment variable
 
 ## Demo
 
-- On task completion: "1234 が完了しました" (1234 has completed)
-- On input waiting: "1234 が入力待ちです" (1234 is waiting for input)
+**Japanese (default):**
+- On task completion: "いちにぃさんよん が完了しました"
+- On input waiting: "いちにぃさんよん が入力待ちです"
+
+**English (`NOTIFY_LANG=en`):**
+- On task completion: "one two three four has completed"
+- On input waiting: "one two three four is waiting for input"
 
 ## Requirements
 
@@ -110,6 +116,27 @@ notify-with-task.sh <event_type> [speaker] [delay_ms] [speed_num] [speed_msg] [i
 | speed_msg | Speech speed for message part | 1.0 |
 | int_num | Intonation for number part | 1.2 |
 | int_msg | Intonation for message part | 1.0 |
+
+**Environment Variables:**
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| NOTIFY_LANG | Message language: `ja` (Japanese) or `en` (English) | `ja` |
+
+**Example with English messages:**
+
+```bash
+NOTIFY_LANG=en ~/.claude/scripts/notify-with-task.sh completed 2 3000
+```
+
+**Claude Code hooks example (English):**
+
+```json
+{
+  "type": "command",
+  "command": "NOTIFY_LANG=en ~/.claude/scripts/notify-with-task.sh completed 2 3000"
+}
+```
 
 ### voicevox-voice.ps1
 
