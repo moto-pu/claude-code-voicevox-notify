@@ -218,6 +218,21 @@ Get-Module -ListAvailable BurntToast
 which powershell.exe
 ```
 
+## クレジット・謝辞
+
+### VOICEVOX
+
+本プロジェクトは [VOICEVOX](https://voicevox.hiroshiba.jp/) を使用しています。
+
+> 本ツールで生成される音声は **VOICEVOX** を利用しています。
+> キャラクターごとの利用規約については [VOICEVOX 利用規約](https://voicevox.hiroshiba.jp/term/) をご確認ください。
+
+生成した音声を利用する際は、VOICEVOX のライセンスに従い「VOICEVOX: [キャラクター名]」のクレジット表記をお願いします。
+
+### インスピレーション
+
+本プロジェクトは [usabarashi/voicevox-cli](https://github.com/usabarashi/voicevox-cli) にインスパイアされて作成しました。Apple Silicon Mac 向けの洗練された VOICEVOX CLI ツールを開発された [@usabarashi](https://github.com/usabarashi) さんに感謝いたします。
+
 ## ライセンス
 
 MIT License
