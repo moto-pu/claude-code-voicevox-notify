@@ -1,59 +1,59 @@
 # Claude Code VOICEVOX Notify
 
-Claude Code の hooks 機能を使って、タスク完了時・入力待ち時に **VOICEVOX で音声通知** するスクリプト集です。
+[日本語版 README はこちら / Japanese README](README.ja.md)
 
-WSL2 + Windows 環境で動作し、作業中のブランチ名から課題番号を自動抽出して読み上げます。
+Voice notification scripts for [Claude Code](https://docs.anthropic.com/en/docs/claude-code) using **VOICEVOX** text-to-speech engine.
 
-## デモ
+Get audio notifications when tasks complete or when Claude Code is waiting for your input.
 
-- タスク完了時: 「1234 が完了しました」
-- 入力待ち時: 「1234 が入力待ちです」
+## Features
 
-※ ブランチ名が `feature/PROJ-1234` の場合、課題番号「1234」を抽出して読み上げます。
+- **VOICEVOX Voice Synthesis** - High-quality Japanese text-to-speech notifications
+- **Windows Toast Notifications** - Visual notifications alongside audio
+- **Auto-extract Issue Numbers** - Extracts issue numbers from git branch names (e.g., `feature/PROJ-1234` → reads "1234")
+- **Customizable Speech** - Adjust speed and intonation separately for numbers and messages
 
-## 特徴
+## Demo
 
-- **VOICEVOX 音声合成** - 高品質な日本語音声で通知
-- **Windows トースト通知** - 視覚的な通知も同時に表示
-- **ブランチ名から課題番号を自動抽出** - Backlog/GitHub Issue 形式に対応
-- **読み上げ速度・抑揚のカスタマイズ** - 数字部分とメッセージ部分を別々に調整可能
+- On task completion: "1234 が完了しました" (1234 has completed)
+- On input waiting: "1234 が入力待ちです" (1234 is waiting for input)
 
-## 必要な環境
+## Requirements
 
 - Windows 10/11 + WSL2
-- [VOICEVOX](https://voicevox.hiroshiba.jp/) (ローカルで起動、デフォルトポート 50021)
-- [BurntToast](https://github.com/Windos/BurntToast) PowerShell モジュール (トースト通知用)
+- [VOICEVOX](https://voicevox.hiroshiba.jp/) (running locally on default port 50021)
+- [BurntToast](https://github.com/Windos/BurntToast) PowerShell module (for toast notifications)
 - [Claude Code](https://docs.anthropic.com/en/docs/claude-code) CLI
 
-## インストール
+## Installation
 
-### 1. VOICEVOX のインストール
+### 1. Install VOICEVOX
 
-[VOICEVOX 公式サイト](https://voicevox.hiroshiba.jp/) からダウンロードしてインストール。
-使用時は VOICEVOX を起動しておく必要があります。
+Download and install from [VOICEVOX official site](https://voicevox.hiroshiba.jp/).
+VOICEVOX must be running when using these scripts.
 
-### 2. BurntToast のインストール (PowerShell)
+### 2. Install BurntToast (PowerShell)
 
 ```powershell
 Install-Module -Name BurntToast -Scope CurrentUser
 ```
 
-### 3. スクリプトの配置
+### 3. Deploy Scripts
 
 ```bash
-# Windows 側 (PowerShell スクリプト)
+# Windows side (PowerShell scripts)
 mkdir -p /mnt/c/Users/<USERNAME>/ClaudeScripts
 cp windows/*.ps1 /mnt/c/Users/<USERNAME>/ClaudeScripts/
 
-# WSL 側 (シェルスクリプト)
+# WSL side (Shell script)
 mkdir -p ~/.claude/scripts
 cp wsl/notify-with-task.sh ~/.claude/scripts/
 chmod +x ~/.claude/scripts/notify-with-task.sh
 ```
 
-### 4. Claude Code hooks 設定
+### 4. Configure Claude Code Hooks
 
-`~/.claude/settings.json` に以下を追加:
+Add the following to `~/.claude/settings.json`:
 
 ```json
 {
@@ -63,7 +63,7 @@ chmod +x ~/.claude/scripts/notify-with-task.sh
         "hooks": [
           {
             "type": "command",
-            "command": "powershell.exe -File \"C:\\Users\\<USERNAME>\\ClaudeScripts\\toast-notify.ps1\" -Title \"Claude Code - Completed\" -Message \"タスクが完了しました\" -Sound \"Default\""
+            "command": "powershell.exe -File \"C:\\Users\\<USERNAME>\\ClaudeScripts\\toast-notify.ps1\" -Title \"Claude Code - Completed\" -Message \"Task completed\" -Sound \"Default\""
           },
           {
             "type": "command",
@@ -78,7 +78,7 @@ chmod +x ~/.claude/scripts/notify-with-task.sh
         "hooks": [
           {
             "type": "command",
-            "command": "powershell.exe -File \"C:\\Users\\<USERNAME>\\ClaudeScripts\\toast-notify.ps1\" -Title \"Claude Code - Input Required\" -Message \"入力待ちです\" -Sound \"SMS\""
+            "command": "powershell.exe -File \"C:\\Users\\<USERNAME>\\ClaudeScripts\\toast-notify.ps1\" -Title \"Claude Code - Input Required\" -Message \"Waiting for input\" -Sound \"SMS\""
           },
           {
             "type": "command",
@@ -91,9 +91,9 @@ chmod +x ~/.claude/scripts/notify-with-task.sh
 }
 ```
 
-`<USERNAME>` は実際の Windows ユーザー名に置き換えてください。
+Replace `<USERNAME>` with your actual Windows username.
 
-## 使い方
+## Usage
 
 ### notify-with-task.sh
 
@@ -101,102 +101,103 @@ chmod +x ~/.claude/scripts/notify-with-task.sh
 notify-with-task.sh <event_type> [speaker] [delay_ms] [speed_num] [speed_msg] [int_num] [int_msg]
 ```
 
-| 引数 | 説明 | デフォルト |
-|------|------|-----------|
-| event_type | `completed` または `waiting` | 必須 |
-| speaker | VOICEVOX スピーカー ID | 2 |
-| delay_ms | 発話前の待機時間 (ミリ秒) | 3000 |
-| speed_num | 数字部分の読み上げ速度 | 0.85 |
-| speed_msg | メッセージ部分の読み上げ速度 | 1.0 |
-| int_num | 数字部分の抑揚 | 1.2 |
-| int_msg | メッセージ部分の抑揚 | 1.0 |
+| Argument | Description | Default |
+|----------|-------------|---------|
+| event_type | `completed` or `waiting` | Required |
+| speaker | VOICEVOX speaker ID | 2 |
+| delay_ms | Delay before speech (milliseconds) | 3000 |
+| speed_num | Speech speed for number part | 0.85 |
+| speed_msg | Speech speed for message part | 1.0 |
+| int_num | Intonation for number part | 1.2 |
+| int_msg | Intonation for message part | 1.0 |
 
 ### voicevox-voice.ps1
 
 ```powershell
-voicevox-voice.ps1 -Message "読み上げテキスト" [-Speaker 2] [-Speed 1.0] [-Intonation 1.0]
+voicevox-voice.ps1 -Message "Text to speak" [-Speaker 2] [-Speed 1.0] [-Intonation 1.0]
 ```
 
-2つのメッセージを異なるパラメータで連続再生:
+Two messages with different parameters:
 
 ```powershell
-voicevox-voice.ps1 -Message "1234" -Speed 0.85 -Message2 "が完了しました" -Speed2 1.0
+voicevox-voice.ps1 -Message "1234" -Speed 0.85 -Message2 "completed" -Speed2 1.0
 ```
 
-### VOICEVOX スピーカー ID
+### VOICEVOX Speaker IDs
 
-| ID | キャラクター |
-|----|-------------|
-| 0 | 四国めたん (あまあま) |
-| 1 | ずんだもん (あまあま) |
-| 2 | 四国めたん (ノーマル) |
-| 3 | ずんだもん (ノーマル) |
-| ... | [VOICEVOX エディタで確認](https://voicevox.hiroshiba.jp/) |
+| ID | Character |
+|----|-----------|
+| 0 | Shikoku Metan (Sweet) |
+| 1 | Zundamon (Sweet) |
+| 2 | Shikoku Metan (Normal) |
+| 3 | Zundamon (Normal) |
+| ... | [See VOICEVOX Editor](https://voicevox.hiroshiba.jp/) |
 
-## ファイル構成
+## File Structure
 
 ```
 claude-code-voicevox-notify/
-├── README.md
+├── README.md                  # English documentation
+├── README.ja.md               # Japanese documentation
 ├── windows/
-│   ├── voicevox-voice.ps1    # VOICEVOX API 呼び出し
-│   └── toast-notify.ps1       # Windows トースト通知
+│   ├── voicevox-voice.ps1    # VOICEVOX API caller
+│   └── toast-notify.ps1       # Windows toast notification
 ├── wsl/
-│   └── notify-with-task.sh    # ブランチ名から課題番号抽出 + 発話
+│   └── notify-with-task.sh    # Extract issue number from branch + speak
 └── examples/
-    └── hooks-settings.json    # Claude Code hooks 設定例
+    └── hooks-settings.json    # Claude Code hooks configuration example
 ```
 
-## 動作の仕組み
+## How It Works
 
 ```
 [Claude Code hooks]
        │
        ▼
-[notify-with-task.sh] ─── git branch から課題番号を抽出
-       │                  例: feature/PROJ-1234 → 1234
-       │                  数字をひらがなに変換 (1234 → いちにぃさんよん)
+[notify-with-task.sh] ─── Extract issue number from git branch
+       │                  e.g., feature/PROJ-1234 → 1234
+       │                  Convert digits to hiragana for natural speech
        ▼
-[voicevox-voice.ps1] ─── VOICEVOX API (localhost:50021) に音声合成リクエスト
+[voicevox-voice.ps1] ─── Send synthesis request to VOICEVOX API (localhost:50021)
        │
        ▼
-[Windows 音声再生]
+[Windows audio playback]
 ```
 
-## トラブルシューティング
+## Troubleshooting
 
-### VOICEVOX に接続できない
+### Cannot connect to VOICEVOX
 
-- VOICEVOX が起動しているか確認
-- デフォルトポート 50021 で起動しているか確認
+- Verify VOICEVOX is running
+- Check it's running on default port 50021
 
 ```powershell
 Invoke-RestMethod -Uri "http://127.0.0.1:50021/speakers"
 ```
 
-### トースト通知が表示されない
+### Toast notifications not showing
 
-- BurntToast モジュールがインストールされているか確認
+- Verify BurntToast module is installed
 
 ```powershell
 Get-Module -ListAvailable BurntToast
 ```
 
-### WSL から PowerShell が実行できない
+### Cannot execute PowerShell from WSL
 
-- `powershell.exe` にパスが通っているか確認
+- Verify `powershell.exe` is in PATH
 
 ```bash
 which powershell.exe
 ```
 
-## ライセンス
+## License
 
 MIT License
 
-## 関連リンク
+## Related Links
 
-- [Claude Code](https://docs.anthropic.com/en/docs/claude-code) - Anthropic 公式 CLI
-- [Claude Code Hooks](https://docs.anthropic.com/en/docs/claude-code/hooks) - hooks 機能のドキュメント
-- [VOICEVOX](https://voicevox.hiroshiba.jp/) - 無料の音声合成ソフトウェア
-- [BurntToast](https://github.com/Windos/BurntToast) - PowerShell トースト通知モジュール
+- [Claude Code](https://docs.anthropic.com/en/docs/claude-code) - Anthropic's official CLI
+- [Claude Code Hooks](https://docs.anthropic.com/en/docs/claude-code/hooks) - Hooks documentation
+- [VOICEVOX](https://voicevox.hiroshiba.jp/) - Free text-to-speech software
+- [BurntToast](https://github.com/Windos/BurntToast) - PowerShell toast notification module
